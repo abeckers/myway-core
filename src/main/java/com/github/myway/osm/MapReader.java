@@ -43,6 +43,7 @@ public class MapReader {
 	private MapData currentMap = null;
 	private Tagged currentTagged;
 	private Way currentWay;
+	private Relation currentRelation;
 
 	public MapData loadMap(XMLStreamReader parser) throws XMLStreamException {
 		while (parser.hasNext()) {
@@ -74,6 +75,12 @@ public class MapReader {
 					break;
 				case "ele":
 					break;
+				case "relation":
+					parseRelation(parser);
+					break;
+				case "member":
+					parseMember(parser);
+					break;
 				}
 				break;
 
@@ -83,6 +90,64 @@ public class MapReader {
 			parser.next();
 		}
 		return currentMap;
+	}
+
+	private void parseMember(XMLStreamReader parser) {
+		RelationMember nd = new RelationMember();
+		if (currentRelation.getMembers() == null) {
+			currentRelation.setMembers(new ArrayList<>());
+		}
+		currentRelation.getMembers().add(nd);
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String attrName = parser.getAttributeLocalName(i);
+			switch (attrName) {
+			case "ref":
+				nd.setReF(parser.getAttributeValue(i));
+				break;
+			case "type":
+				nd.setType(parser.getAttributeValue(i));
+				break;
+			case "role":
+				nd.setRole(parser.getAttributeValue(i));
+				break;
+			}
+		}
+		if ("node".equals(nd.getType())) {
+			Node node = (Node) currentMap.getObjects().get(nd.getReF());
+			if (node != null) {
+				nd.setNode(node);
+			}
+		}
+		else if ("way".equals(nd.getType())) {
+			Way way = (Way) currentMap.getObjects().get(nd.getReF());
+			if (way != null) {
+				nd.setWay(way);
+			}
+		}
+		else if ("relation".equals(nd.getType())) {
+			Relation relation = (Relation) currentMap.getObjects().get(nd.getReF());
+			if (relation != null) {
+				nd.setRelation(relation);
+			}
+		}
+	}
+
+	private void parseRelation(XMLStreamReader parser) {
+		currentRelation = new Relation();
+		currentTagged = currentRelation;
+		if (currentMap.getRelations() == null) {
+			currentMap.setRelations(new ArrayList<>());
+		}
+		currentMap.getRelations().add(currentRelation);
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String attrName = parser.getAttributeLocalName(i);
+			switch (attrName) {
+			case "id":
+				currentRelation.setId(parser.getAttributeValue(i));
+				break;
+			}
+		}
+		addTagged(currentRelation);
 	}
 
 	private void parseWay(XMLStreamReader parser) {
