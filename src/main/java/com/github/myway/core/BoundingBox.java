@@ -24,9 +24,10 @@ public class BoundingBox {
 		if (bbx2.getLongitudeMin() < bbxn.getLongitudeMin()) {
 			bbxn.setLongitudeMin(bbx2.getLongitudeMin());
 		}
-		if (bbx2.getLongitudeMax() < bbxn.getLatitudeMin()) {
+		if (bbx2.getLongitudeMax() > bbxn.getLongitudeMax()) {
 			bbxn.setLongitudeMax(bbx2.getLongitudeMax());
 		}
+		System.out.println(bbx1 + " + " + bbx2 + " => " + bbxn);
 		return bbxn;
 	}
 
@@ -45,9 +46,10 @@ public class BoundingBox {
 		if (point.getLongitude() < bbxn.getLongitudeMin()) {
 			bbxn.setLongitudeMin(point.getLongitude());
 		}
-		if (point.getLongitude() < bbxn.getLatitudeMax()) {
+		if (point.getLongitude() > bbxn.getLongitudeMax()) {
 			bbxn.setLongitudeMax(point.getLongitude());
 		}
+		System.out.println(bbx + " + " + point + " => " + bbxn);
 		return bbxn;
 	}
 
@@ -57,6 +59,7 @@ public class BoundingBox {
 		bbx.setLatitudeMin(point.getLatitude());
 		bbx.setLongitudeMax(point.getLongitude());
 		bbx.setLongitudeMin(point.getLongitude());
+		System.out.println(point + " => " + bbx);
 		return bbx;
 	}
 }
